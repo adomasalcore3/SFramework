@@ -105,7 +105,7 @@ class load
 	private $__debug;
 	function __construct()
 	{
-		$this->__debug=CTMOS::$debug_mode;
+		$this->__debug=SF_Core::$debug_mode;
 		$this->debug('loaded Load');
 	}
 	private function debug($r)
@@ -119,7 +119,7 @@ class load
 	function __class($cn)
 	{
 		$this->debug('loading class:'.$cn);
-		$dir=CTMOS_PTH.'/Core/'.$cn.'.php';
+		$dir=Sys.'/Core/'.$cn.'.php';
 		if(file_exists($dir))
 		{
 			$this->debug('class '.$cn.' loaded');
@@ -137,7 +137,7 @@ class load
 	function __functions($func)
 	{
 		$this->debug('loading function group:'.$cn);
-		$dir=CTMOS_PTH.'/functions_groups/'.$cn.'.php';
+		$dir=Sys_PTH.'/functions_groups/'.$cn.'.php';
 		if(file_exists($dir))
 		{
 			$this->debug('function group '.$cn.' loaded');
@@ -148,18 +148,52 @@ class load
 			$this->debug('function group file '.$cn.' wasn\'t loaded because file does not exists');
 		}
 	}
-	function __unload($cn)
+}
+
+class unload
+{
+	/*
+	**gets the global debug mode
+	*/
+	private $__debug;
+	function __construct()
 	{
-		if($cn!='load')
+		$this->__debug=SFcore::$debug_mode;
+		$this->debug('loaded Load');
+	}
+	private function debug($r)
+	{
+		if($this->__debug==TRUE)
 		{
-			$parent=&get_instance();
-			$cln=strtolower($cn);
-			$parent->$cln=$cn;
+			print_r($r);
+			print_r('<br>');
+		}
+	}
+	function __class($cn)
+	{
+		$this->debug('unloading class:'.$cn);
+		$parent=&get_instance();
+		$cln=strtolower($cn);
+		if(($cln!='load') && ($cln!='unload') && isset($parent->$cln) && is_object($parent->$cln) && is_a($parent->$cln,$cln))
+		{
+			$parent->$cln=null;
 			$parent::save_instance($parent);
+		}
+		elseif(isset($parent->$cln) && !is_object($parent->$cln) )
+		{
+			$this->debug(''.$cn.' is not an Class');
+		}
+		elseif(!isset($parent->$cln))
+		{
+			$this->debug(''.$cn.' Class doesn\'t had been instanciate!');
+		}
+		elseif(($cln=='load')||($cln=='unload'))
+		{
+			$this->debug('class '.$cn.'Cannot Be unloaded since it is part of the system!');
 		}
 		else
 		{
-			$this->debug('you can\'t unload the load class!');
+			$this->debug('class '.$cn.'??? where are you?');
 		}
 	}
 }
