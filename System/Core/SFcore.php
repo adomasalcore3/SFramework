@@ -148,7 +148,7 @@ class load
 			$this->debug('function group file '.$cn.' wasn\'t loaded because file does not exists');
 		}
 	}
-	function unload($cn)
+	function __unload($cn)
 	{
 		if($cn!='load')
 		{
