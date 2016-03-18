@@ -148,6 +148,30 @@ class load
 			$this->debug('function group file '.$cn.' wasn\'t loaded because file does not exists');
 		}
 	}
+	function library($library)
+	{
+		$this->debug('loading library:'.$cn);
+		$system_library_path=Sys.'/library/'.$library.'.php';
+		$application_library_path=App.'/library/'.$library.'.php';
+		if(file_exists($system_library_path))
+		{
+			require_once($system_library_path);
+			$sl=explode("/",$library);
+			$sl_class=$sl[count($sl)-1];
+			if(class_exists($sl_class))
+			{
+				$private=&get_instance();
+				if(!isset($private->$sl_class))
+				{
+					$private->strtolower($sl_class)=new $sl_class;
+					$this->debug('library loaded:'.$cn);
+				}
+				else {
+					$this->debug('library is already loaded:'.$cn);
+				}
+			}
+		}
+	}
 }
 
 class unload
@@ -193,7 +217,7 @@ class unload
 		}
 		else
 		{
-			$this->debug('class '.$cn.'??? where are you?');
+			$this->debug('unknown error... maybe the class:'.$cn.' doesn\'t exists');
 		}
 	}
 }
